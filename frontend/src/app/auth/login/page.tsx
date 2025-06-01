@@ -20,18 +20,20 @@ export default function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        throw new Error('Invalid credentials');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Invalid credentials');
       }
 
       const data = await response.json();
       document.cookie = `token=${data.access_token}; path=/`;
       router.push('/repositories');
     } catch (err) {
-      setError('Invalid email or password');
+      setError(err instanceof Error ? err.message : 'Invalid email or password');
     }
   };
 

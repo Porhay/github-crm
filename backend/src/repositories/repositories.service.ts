@@ -1,80 +1,109 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Octokit } from 'octokit';
+import { User as UserEntity } from '../users/entities/user.entity';
 import { Repository as RepositoryEntity } from './entities/repository.entity';
-import { User } from '../users/entities/user.entity';
+import { CreateRepositoryDto } from './dto/create-repository.dto';
+import { UpdateRepositoryDto } from './dto/update-repository.dto';
+import axios from 'axios';
 
 @Injectable()
 export class RepositoriesService {
-  private octokit: Octokit;
-
   constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     @InjectRepository(RepositoryEntity)
     private repositoriesRepository: Repository<RepositoryEntity>,
-  ) {
-    this.octokit = new Octokit({
-      auth: process.env.GITHUB_API_TOKEN,
-    });
-  }
+  ) {}
 
-  async create(user: User, repoPath: string): Promise<RepositoryEntity> {
-    const [owner, name] = repoPath.split('/');
-    
+  private async getPublicRepository(owner: string, repo: string): Promise<any> {
     try {
-      const { data: repo } = await this.octokit.rest.repos.get({
-        owner,
-        repo: name,
+      const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, {
+        headers: {
+          'User-Agent': 'nest-app',
+          // ...(process.env.GITHUB_TOKEN && { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}` }),
+        },
       });
 
-      const repository = this.repositoriesRepository.create({
-        owner: repo.owner.login,
-        name: repo.name,
-        url: repo.html_url,
-        stars: repo.stargazers_count,
-        forks: repo.forks_count,
-        openIssues: repo.open_issues_count,
-        githubCreatedAt: new Date(repo.created_at).getTime(),
-        user,
-      });
-
-      return this.repositoriesRepository.save(repository);
+      return response.data;
     } catch (error) {
-      throw new NotFoundException('Repository not found');
+      if (error.response?.status === 404) {
+        throw new NotFoundException('Repository not found');
+      }
+      throw error;
     }
   }
 
-  async findAll(user: User): Promise<RepositoryEntity[]> {
+  async create(createRepositoryDto: CreateRepositoryDto, userId: string): Promise<RepositoryEntity> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const [owner, name] = createRepositoryDto.path.split('/');
+    const data = await this.getPublicRepository(owner, name);
+
+    const repository = this.repositoriesRepository.create({
+      owner,
+      name,
+      url: data.html_url,
+      stars: data.stargazers_count,
+      forks: data.forks_count,
+      openIssues: data.open_issues_count,
+      githubCreatedAt: new Date(data.created_at),
+      user,
+    });
+
+    return this.repositoriesRepository.save(repository);
+  }
+
+  async findAll(userId: string): Promise<RepositoryEntity[]> {
     return this.repositoriesRepository.find({
-      where: { user: { id: user.id } },
+      where: { user: { id: userId } },
     });
   }
 
-  async update(user: User, id: string): Promise<RepositoryEntity> {
+  async findOne(id: string, userId: string): Promise<RepositoryEntity> {
     const repository = await this.repositoriesRepository.findOne({
-      where: { id, user: { id: user.id } },
+      where: { id, user: { id: userId } },
     });
 
     if (!repository) {
       throw new NotFoundException('Repository not found');
     }
 
-    const { data: repo } = await this.octokit.rest.repos.get({
-      owner: repository.owner,
-      repo: repository.name,
+    return repository;
+  }
+
+  async update(id: string, updateRepositoryDto: UpdateRepositoryDto, userId: string): Promise<RepositoryEntity> {
+    const repository = await this.repositoriesRepository.findOne({
+      where: { id, user: { id: userId } },
     });
 
-    repository.stars = repo.stargazers_count;
-    repository.forks = repo.forks_count;
-    repository.openIssues = repo.open_issues_count;
+    if (!repository) {
+      throw new NotFoundException('Repository not found');
+    }
+
+    const [owner, name] = updateRepositoryDto.path.split('/');
+    const data = await this.getPublicRepository(owner, name);
+
+    Object.assign(repository, {
+      owner,
+      name,
+      url: data.html_url,
+      stars: data.stargazers_count,
+      forks: data.forks_count,
+      openIssues: data.open_issues_count,
+      githubCreatedAt: new Date(data.created_at),
+    });
 
     return this.repositoriesRepository.save(repository);
   }
 
-  async remove(user: User, id: string): Promise<void> {
+  async remove(id: string, userId: string): Promise<void> {
     const result = await this.repositoriesRepository.delete({
       id,
-      user: { id: user.id },
+      user: { id: userId },
     });
 
     if (result.affected === 0) {

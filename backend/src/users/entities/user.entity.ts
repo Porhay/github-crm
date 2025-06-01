@@ -15,9 +15,9 @@ export class User {
   @OneToMany(() => Repository, repository => repository.user)
   repositories: Repository[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 } 
