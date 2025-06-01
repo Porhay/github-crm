@@ -24,7 +24,7 @@ export class Repository {
   @Column()
   openIssues: number;
 
-  @Column({ type: 'timestamp' })
+  @Column({ name: 'github_created_at', type: 'timestamp' })
   githubCreatedAt: Date;
 
   @ManyToOne(() => User, user => user.repositories)

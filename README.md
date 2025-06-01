@@ -1,5 +1,40 @@
 # GitHub CRM
 
+TODO:
+1. Копіювати env для frontend та backend папок 
+```
+cd frontend && cp .env.example .env
+```
+```
+cd ../backend && cp .env.example .env
+```
+
+2. Run db and dbadmin 
+docker-compose up -d --build postgres dbadmin-postgres
+
+3. Go to http://localhost:5050/browser/ and use credentials:
+Email: root@devloc.space
+Password: toor
+
+4. Add new server with: 
+Name: GitHub CRM Database
+Host: postgres
+Port: 5432
+Maintenance database: github_crm
+Username: postgres
+Password: postgres
+
+5. Run docker-compose
+docker-compose up -d --build
+
+6. The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+
+
+-------------------------------------------------------
+
+
 A simple CRM system for managing public GitHub repositories.
 
 ## Features
@@ -24,72 +59,6 @@ A simple CRM system for managing public GitHub repositories.
   - PostgreSQL
   - TypeORM
 
-## Prerequisites
-
-- Node.js 18 or later
-- Docker and Docker Compose
-- GitHub API token
-
-## Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-GITHUB_API_TOKEN=your_github_token
-JWT_SECRET=your_jwt_secret
-```
-
-## Getting Started
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/github-crm.git
-cd github-crm
-```
-
-2. Install dependencies:
-```bash
-# Install frontend dependencies
-cd frontend
-npm install
-
-# Install backend dependencies
-cd ../backend
-npm install
-```
-
-3. Start the development environment:
-```bash
-# From the root directory
-docker-compose up
-```
-
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
-
-## Development
-
-### Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-### Backend
-
-```bash
-cd backend
-npm run start:dev
-```
-
-## Building for Production
-
-```bash
-# Build and start all services
-docker-compose up --build
-```
 
 ## API Endpoints
 
@@ -102,28 +71,3 @@ docker-compose up --build
 - POST /repositories - Add a new repository
 - PATCH /repositories/:id - Update repository
 - DELETE /repositories/:id - Delete repository
-
-## License
-
-MIT
-
-docker build -t github-crm-backend:devel -f Dockerfile .
-
-docker run -d \
-    -u `id -u` \
-    --network workspace \
-    --name github-crm-backend.workspace \
-    -v $(pwd):/usr/src/app \
-    -p 9257:9257 \
-    github-crm-backend:devel
-
-
-Email: root@devloc.space
-Password: toor
-
-Name: GitHub CRM Database
-Host: postgres
-Port: 5432
-Maintenance database: github_crm
-Username: postgres
-Password: postgres
