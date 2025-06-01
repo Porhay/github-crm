@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
+import '@/styles/main.scss';
 
 interface Repository {
   id: string;
@@ -157,94 +158,86 @@ export default function RepositoriesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="loading">
+        <div>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+    <div className="repositories-page">
       <Navigation />
-      <div className="p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-xl shadow-2xl p-8 mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">GitHub Repositories</h1>
+      <div className="repositories-page__container">
+        <div className="repositories-page__card">
+          <h1 className="repositories-page__title">GitHub Repositories</h1>
 
-            <form onSubmit={handleAddRepository} className="mb-8">
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  value={newRepoPath}
-                  onChange={(e) => setNewRepoPath(e.target.value)}
-                  placeholder="Enter repository path (e.g., facebook/react)"
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  Add Repository
-                </button>
-              </div>
-            </form>
+          <form onSubmit={handleAddRepository} className="repositories-page__form">
+            <input
+              type="text"
+              value={newRepoPath}
+              onChange={(e) => setNewRepoPath(e.target.value)}
+              placeholder="Enter repository path (e.g., facebook/react)"
+              required
+            />
+            <button type="submit">
+              Add Repository
+            </button>
+          </form>
 
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {error}
-              </div>
-            )}
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stars</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forks</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Open Issues</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {repositories.map((repo) => (
-                    <tr key={repo.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{repo.owner}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{repo.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
-                        <a href={repo.url} target="_blank" rel="noopener noreferrer">
-                          {repo.url}
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{repo.stars}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{repo.forks}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{repo.openIssues}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(repo.githubCreatedAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleUpdateRepository(repo.id)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
-                        >
-                          Update
-                        </button>
-                        <button
-                          onClick={() => handleDeleteRepository(repo.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {error && (
+            <div className="repositories-page__error">
+              {error}
             </div>
+          )}
+
+          <div className="repositories-page__table-container">
+            <table className="repositories-page__table">
+              <thead>
+                <tr>
+                  <th>Owner</th>
+                  <th>Name</th>
+                  <th>URL</th>
+                  <th>Stars</th>
+                  <th>Forks</th>
+                  <th>Open Issues</th>
+                  <th>Created At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {repositories.map((repo) => (
+                  <tr key={repo.id}>
+                    <td>{repo.owner}</td>
+                    <td>{repo.name}</td>
+                    <td>
+                      <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                        {repo.url}
+                      </a>
+                    </td>
+                    <td>{repo.stars}</td>
+                    <td>{repo.forks}</td>
+                    <td>{repo.openIssues}</td>
+                    <td>
+                      {new Date(repo.githubCreatedAt).toLocaleDateString()}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleUpdateRepository(repo.id)}
+                        className="update"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRepository(repo.id)}
+                        className="delete"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

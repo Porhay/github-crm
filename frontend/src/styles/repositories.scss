@@ -1,0 +1,170 @@
+@import 'variables';
+
+.repositories-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, $primary-blue, $primary-purple);
+  padding: $spacing-8;
+
+  &__container {
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  &__card {
+    background: $white;
+    border-radius: $border-radius-xl;
+    box-shadow: $shadow-xl;
+    padding: $spacing-8;
+    margin-bottom: $spacing-8;
+  }
+
+  &__title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $gray-800;
+    margin-bottom: $spacing-6;
+  }
+
+  &__form {
+    margin-bottom: $spacing-8;
+    display: flex;
+    gap: $spacing-4;
+
+    input {
+      flex: 1;
+      border-radius: $border-radius-md;
+      border: 1px solid $gray-300;
+      padding: $spacing-2;
+      box-shadow: $shadow-sm;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-blue;
+        box-shadow: 0 0 0 2px rgba($primary-blue, 0.2);
+      }
+    }
+
+    button {
+      background: $primary-blue;
+      color: $white;
+      padding: $spacing-2 $spacing-4;
+      border-radius: $border-radius-md;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: darken($primary-blue, 5%);
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba($primary-blue, 0.2);
+      }
+    }
+  }
+
+  &__error {
+    background: lighten($red-400, 30%);
+    border: 1px solid $red-400;
+    color: $red-700;
+    padding: $spacing-3 $spacing-4;
+    border-radius: $border-radius-md;
+    margin-bottom: $spacing-4;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+
+    th {
+      background: $gray-50;
+      padding: $spacing-3 $spacing-6;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: $gray-500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:nth-child(1) { width: 10%; } // Owner
+      &:nth-child(2) { width: 15%; } // Name
+      &:nth-child(3) { width: 25%; } // URL
+      &:nth-child(4) { width: 8%; }  // Stars
+      &:nth-child(5) { width: 8%; }  // Forks
+      &:nth-child(6) { width: 10%; } // Open Issues
+      &:nth-child(7) { width: 12%; } // Created At
+      &:nth-child(8) { width: 12%; } // Actions
+    }
+
+    td {
+      padding: $spacing-4 $spacing-6;
+      font-size: 0.875rem;
+      color: $gray-900;
+      border-bottom: 1px solid $gray-200;
+      white-space: normal;
+      word-wrap: break-word;
+      vertical-align: top;
+
+      &:last-child {
+        white-space: nowrap;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    a {
+      color: $primary-blue;
+      text-decoration: none;
+      word-break: break-all;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0;
+      margin-right: $spacing-4;
+      white-space: nowrap;
+
+      &.update {
+        color: $primary-blue;
+
+        &:hover {
+          color: darken($primary-blue, 10%);
+        }
+      }
+
+      &.delete {
+        color: $red-600;
+
+        &:hover {
+          color: $red-700;
+        }
+      }
+    }
+  }
+}
+
+.loading {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, $primary-blue, $primary-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+  font-size: 1.25rem;
+} 

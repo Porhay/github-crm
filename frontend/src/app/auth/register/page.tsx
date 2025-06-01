@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import '@/styles/main.scss';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -40,19 +41,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Register</h1>
+    <div className="auth-page">
+      <div className="auth-page__card">
+        <h1 className="auth-page__title">Register</h1>
         
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="auth-page__error">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <form onSubmit={handleSubmit} className="auth-page__form">
+          <div className="auth-page__form-group">
+            <label htmlFor="email" className="auth-page__label">
               Email
             </label>
             <input
@@ -60,13 +61,13 @@ export default function RegisterPage() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="auth-page__input"
               required
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <div className="auth-page__form-group">
+            <label htmlFor="password" className="auth-page__label">
               Password
             </label>
             <input
@@ -74,13 +75,13 @@ export default function RegisterPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="auth-page__input"
               required
             />
           </div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+          <div className="auth-page__form-group">
+            <label htmlFor="confirmPassword" className="auth-page__label">
               Confirm Password
             </label>
             <input
@@ -88,22 +89,19 @@ export default function RegisterPage() {
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="auth-page__input"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
+          <button type="submit" className="auth-page__submit">
             Register
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="auth-page__footer">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-blue-500 hover:text-blue-600">
+          <Link href="/auth/login" className="auth-page__link">
             Login
           </Link>
         </p>
