@@ -86,7 +86,7 @@ export class RepositoriesService {
     const data = await this.getPublicRepository(repository.owner, repository.name);
 
     Object.assign(repository, {
-      owner: data.owner,
+      owner: data.owner.login,
       name: data.name,
       url: data.html_url,
       stars: data.stargazers_count,
