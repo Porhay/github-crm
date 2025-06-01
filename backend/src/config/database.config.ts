@@ -5,7 +5,7 @@ config();
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: process.env.DB_HOST || 'db',
+  host: process.env.DB_HOST || 'github-crm-postgres-1',
   port: parseInt(process.env.DB_PORT || '5432', 10),
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
