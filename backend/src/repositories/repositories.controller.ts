@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, HttpCode, HttpStatus, Patch } from '@nestjs/common';
 import { RepositoriesService } from './repositories.service';
 import { UpdateRepositoryDto } from './dto/update-repository.dto';
 import { AuthUser } from '../auth/decorators/auth-user.decorator';
@@ -22,10 +22,10 @@ export class RepositoriesController {
     return this.repositoriesService.findAll(user.id);
   }
 
-  @Post(':id/update')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  update(@AuthUser() user: User, @Param('id') id: string, @Body() updateRepositoryDto: UpdateRepositoryDto) {
-    return this.repositoriesService.update(id, updateRepositoryDto, user.id);
+  update(@AuthUser() user: User, @Param('id') id: string) {
+    return this.repositoriesService.update(id, user.id);
   }
 
   @Delete(':id')

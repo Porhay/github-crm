@@ -21,7 +21,6 @@ export class RepositoriesService {
       const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, {
         headers: {
           'User-Agent': 'nest-app',
-          // ...(process.env.GITHUB_TOKEN && { 'Authorization': `Bearer ${process.env.GITHUB_TOKEN}` }),
         },
       });
 
@@ -75,7 +74,7 @@ export class RepositoriesService {
     return repository;
   }
 
-  async update(id: string, updateRepositoryDto: UpdateRepositoryDto, userId: string): Promise<RepositoryEntity> {
+  async update(id: string, userId: string): Promise<RepositoryEntity> {
     const repository = await this.repositoriesRepository.findOne({
       where: { id, user: { id: userId } },
     });
@@ -84,12 +83,11 @@ export class RepositoriesService {
       throw new NotFoundException('Repository not found');
     }
 
-    const [owner, name] = updateRepositoryDto.path.split('/');
-    const data = await this.getPublicRepository(owner, name);
+    const data = await this.getPublicRepository(repository.owner, repository.name);
 
     Object.assign(repository, {
-      owner,
-      name,
+      owner: data.owner,
+      name: data.name,
       url: data.html_url,
       stars: data.stargazers_count,
       forks: data.forks_count,
