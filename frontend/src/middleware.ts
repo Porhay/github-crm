@@ -5,26 +5,18 @@ export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get('access_token');
   const { pathname } = request.nextUrl;
 
-  console.log('Middleware:', {
-    pathname,
-    hasAccessToken: !!accessToken
-  });
-
   // If user is not authenticated and trying to access protected routes
   if (!accessToken && !pathname.startsWith('/auth/')) {
-    console.log('Redirecting to login');
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
   // If user is authenticated and trying to access auth pages
   if (accessToken && pathname.startsWith('/auth/')) {
-    console.log('Redirecting to repositories');
     return NextResponse.redirect(new URL('/repositories', request.url));
   }
 
   // If user is authenticated and on root page
   if (accessToken && pathname === '/') {
-    console.log('Redirecting to repositories from root');
     return NextResponse.redirect(new URL('/repositories', request.url));
   }
 

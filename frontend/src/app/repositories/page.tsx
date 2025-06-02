@@ -27,13 +27,8 @@ export default function RepositoriesPage() {
   useEffect(() => {
     const checkAuthAndFetch = async () => {
       const isAuthenticated = authService.isAuthenticated();
-      console.log('Repositories page auth check:', { 
-        isAuthenticated,
-        accessToken: authService.getAccessToken()
-      });
 
       if (!isAuthenticated) {
-        console.log('User not authenticated, redirecting to login');
         router.replace('/auth/login');
         return;
       }
@@ -46,7 +41,6 @@ export default function RepositoriesPage() {
 
   const fetchRepositories = async () => {
     try {
-      console.log('Fetching repositories...');
       const response = await fetch('http://localhost:3001/repositories', {
         headers: {
           'Authorization': `Bearer ${authService.getAccessToken()}`,
@@ -59,10 +53,8 @@ export default function RepositoriesPage() {
       }
 
       const data = await response.json();
-      console.log('Repositories fetched successfully:', data);
       setRepositories(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error('Error fetching repositories:', err);
       setError('Failed to load repositories');
     } finally {
       setLoading(false);

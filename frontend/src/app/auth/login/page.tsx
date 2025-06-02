@@ -18,10 +18,8 @@ export default function LoginPage() {
 
     try {
       await authService.login(email, password);
-      console.log('Login successful, redirecting...');
       router.replace('/repositories');
     } catch (err) {
-      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Invalid email or password');
     }
   };

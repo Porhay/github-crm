@@ -64,8 +64,6 @@ class AuthService {
   }
 
   private setTokens(accessToken: string, refreshToken: string): void {
-    console.log('Setting tokens:', { accessToken, refreshToken });
-    
     // Set access token cookie (15 minutes expiration)
     Cookies.set(ACCESS_TOKEN_COOKIE, accessToken, { 
       expires: 15 / (24 * 60), // 15 minutes in days
@@ -85,21 +83,18 @@ class AuthService {
   }
 
   private clearTokens(): void {
-    console.log('Clearing tokens');
     Cookies.remove(ACCESS_TOKEN_COOKIE, { path: '/', domain: 'localhost' });
     Cookies.remove(REFRESH_TOKEN_COOKIE, { path: '/', domain: 'localhost' });
     delete axios.defaults.headers.common['Authorization'];
   }
 
   public async login(email: string, password: string): Promise<void> {
-    console.log('Attempting login...');
     const response = await axios.post<AuthResponse>(`${API_URL}/auth/login`, {
       email,
       password,
     });
 
     const { access_token, refresh_token } = response.data;
-    console.log('Login successful, received tokens');
     this.setTokens(access_token, refresh_token);
   }
 
@@ -146,16 +141,14 @@ class AuthService {
           refresh_token: refreshToken,
         });
       } catch (error) {
-        console.error('Logout error:', error);
+        // Silent fail on logout
       }
     }
     this.clearTokens();
   }
 
   public isAuthenticated(): boolean {
-    const accessToken = this.getAccessToken();
-    console.log('Checking authentication:', { accessToken });
-    return !!accessToken;
+    return !!this.getAccessToken();
   }
 
   public getAccessToken(): string | undefined {
