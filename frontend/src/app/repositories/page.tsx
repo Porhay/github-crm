@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
+import { authService } from '@/services/auth.service';
 import '@/styles/main.scss';
 
 interface Repository {
@@ -24,43 +25,44 @@ export default function RepositoriesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-    if (!token) {
-      router.push('/auth/login');
-      return;
-    }
+    const checkAuthAndFetch = async () => {
+      const isAuthenticated = authService.isAuthenticated();
+      console.log('Repositories page auth check:', { 
+        isAuthenticated,
+        accessToken: authService.getAccessToken()
+      });
 
-    fetchRepositories();
+      if (!isAuthenticated) {
+        console.log('User not authenticated, redirecting to login');
+        router.replace('/auth/login');
+        return;
+      }
+
+      await fetchRepositories();
+    };
+
+    checkAuthAndFetch();
   }, [router]);
 
   const fetchRepositories = async () => {
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
-
+      console.log('Fetching repositories...');
       const response = await fetch('http://localhost:3001/repositories', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
         },
         credentials: 'include',
       });
-
-      if (response.status === 401) {
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        router.push('/auth/login');
-        return;
-      }
 
       if (!response.ok) {
         throw new Error('Failed to fetch repositories');
       }
 
       const data = await response.json();
+      console.log('Repositories fetched successfully:', data);
       setRepositories(Array.isArray(data) ? data : []);
     } catch (err) {
+      console.error('Error fetching repositories:', err);
       setError('Failed to load repositories');
     } finally {
       setLoading(false);
@@ -72,27 +74,15 @@ export default function RepositoriesPage() {
     setError('');
 
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
-
       const response = await fetch('http://localhost:3001/repositories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
         },
         credentials: 'include',
         body: JSON.stringify({ repoPath: newRepoPath }),
       });
-
-      if (response.status === 401) {
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        router.push('/auth/login');
-        return;
-      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -108,16 +98,10 @@ export default function RepositoriesPage() {
 
   const handleUpdateRepository = async (id: string) => {
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
-
       const response = await fetch(`http://localhost:3001/repositories/${id}`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
         },
       });
 
@@ -133,16 +117,10 @@ export default function RepositoriesPage() {
 
   const handleDeleteRepository = async (id: string) => {
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
-
       const response = await fetch(`http://localhost:3001/repositories/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
         },
       });
 

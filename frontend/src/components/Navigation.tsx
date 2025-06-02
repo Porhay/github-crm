@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { authService } from '@/services/auth.service';
 import '@/styles/main.scss';
 
 export default function Navigation() {
   const router = useRouter();
 
-  const handleLogout = () => {
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  const handleLogout = async () => {
+    await authService.logout();
     router.push('/auth/login');
   };
 

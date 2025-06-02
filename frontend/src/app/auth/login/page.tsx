@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { authService } from '@/services/auth.service';
 import '@/styles/main.scss';
 
 export default function LoginPage() {
@@ -16,24 +17,11 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Invalid credentials');
-      }
-
-      const data = await response.json();
-      document.cookie = `token=${data.access_token}; path=/`;
-      router.push('/repositories');
+      await authService.login(email, password);
+      console.log('Login successful, redirecting...');
+      router.replace('/repositories');
     } catch (err) {
+      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Invalid email or password');
     }
   };
